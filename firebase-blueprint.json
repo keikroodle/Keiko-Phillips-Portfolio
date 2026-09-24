@@ -1,0 +1,34 @@
+{
+  "entities": {
+    "TranslationDoc": {
+      "title": "Translation Document",
+      "description": "Stores localized strings for all languages",
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "object",
+          "description": "English translations"
+        },
+        "jp": {
+          "type": "object",
+          "description": "Japanese translations"
+        },
+        "de": {
+          "type": "object",
+          "description": "German translations"
+        },
+        "ru": {
+          "type": "object",
+          "description": "Russian translations"
+        }
+      },
+      "required": ["en", "jp", "de", "ru"]
+    }
+  },
+  "firestore": {
+    "translations/{docId}": {
+      "schema": { "$ref": "TranslationDoc" },
+      "description": "Translation documents for UI text"
+    }
+  }
+}

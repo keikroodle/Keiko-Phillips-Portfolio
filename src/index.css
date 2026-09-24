@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'GoodGirl';
+  src: url('/GoodGirl.ttf.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@theme {
+  --color-zine-bg: #F3EFE6;
+  --color-zine-ink: #0D0D0D;
+  --color-zine-vermilion: #FF3B00;
+  --color-zine-acid: #DFFF00;
+  --color-zine-rule: #CFC8B8;
+
+  --font-anton: "Anton", sans-serif;
+  --font-syne: "Syne", sans-serif;
+  --font-serif: "Josefin Sans", sans-serif;
+  --font-mono: "Space Mono", monospace;
+  --font-goodgirl: "GoodGirl", sans-serif;
+}
+
+body {
+  background-color: var(--color-zine-bg);
+  color: var(--color-zine-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  cursor: none !important;
+}
+
+.writing-vertical-rl {
+  writing-mode: vertical-rl;
+}
+
+.text-outline-bg {
+  text-shadow: 
+    -3px -3px 0 var(--color-zine-bg),
+     0   -3px 0 var(--color-zine-bg),
+     3px -3px 0 var(--color-zine-bg),
+     3px  0   0 var(--color-zine-bg),
+     3px  3px 0 var(--color-zine-bg),
+     0    3px 0 var(--color-zine-bg),
+    -3px  3px 0 var(--color-zine-bg),
+    -3px  0   0 var(--color-zine-bg),
+    -3px -1px 0 var(--color-zine-bg),
+    -1px -3px 0 var(--color-zine-bg),
+     3px -1px 0 var(--color-zine-bg),
+     1px -3px 0 var(--color-zine-bg),
+     3px  1px 0 var(--color-zine-bg),
+     1px  3px 0 var(--color-zine-bg),
+    -3px  1px 0 var(--color-zine-bg),
+    -1px  3px 0 var(--color-zine-bg);
+}

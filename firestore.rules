@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { 
+      return isSignedIn() && 
+             request.auth.token.email_verified == true &&
+             request.auth.token.email == 'keikojphillips@gmail.com'; 
+    }
+    
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // Validation for TranslationDoc
+    function isValidTranslationDoc(data) {
+      return data.keys().hasAll(['en', 'jp', 'de', 'ru'])
+          && data.keys().size() == 4
+          && data.en is map
+          && data.jp is map
+          && data.de is map
+          && data.ru is map;
+    }
+
+    match /translations/{docId} {
+      // Anyone can read translations
+      allow read: if isValidId(docId);
+      
+      // Only the admin (Keiko) can write/update translations
+      allow create: if isAdmin() 
+                    && isValidId(docId) 
+                    && isValidTranslationDoc(incoming());
+                    
+      allow update: if isAdmin() 
+                    && isValidId(docId) 
+                    && isValidTranslationDoc(incoming());
+                    
+      allow delete: if isAdmin() && isValidId(docId);
+    }
+  }
+}
