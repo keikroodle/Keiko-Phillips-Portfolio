@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from './hooks/useTranslations';
 import TranslationManager from './components/TranslationManager';
 
+const assetUrl = (assetPath: string) => `${import.meta.env.BASE_URL}${assetPath}`;
+
 const Barcode = () => (
   <div className="flex h-10 md:h-12 items-end gap-[2px] opacity-90 mix-blend-multiply">
     {[2, 4, 1, 3, 2, 5, 1, 2, 4, 1, 1, 3, 2, 2, 1, 4, 2, 1, 3, 4, 1, 2, 3, 1].map((w, i) => (
@@ -98,7 +100,7 @@ const CustomCursor = () => {
       style={{ transform: `translate3d(-100px, -100px, 0)`, willChange: 'transform' }}
     >
       <img 
-        src="/snail%20cursor.png" 
+        src={assetUrl('snail cursor.png')}
         alt="" 
         className="w-16 md:w-20 h-auto grayscale contrast-[1.2] transition-transform duration-150 ease-out"
         style={{ transform: 'translate(-50%, -50%)' }}
@@ -131,7 +133,7 @@ export default function App() {
     <div 
       className="min-h-screen text-zine-ink font-syne selection:bg-zine-acid selection:text-zine-ink overflow-x-hidden relative"
       style={{ 
-        backgroundImage: activePage === 'film' ? 'none' : 'url("/snail-bg.png")', 
+        backgroundImage: activePage === 'film' ? 'none' : `url("${assetUrl('snail-bg.png')}")`,
         backgroundSize: '800px', 
         backgroundRepeat: 'repeat', 
         backgroundPosition: 'center' 
@@ -146,7 +148,7 @@ export default function App() {
           muted 
           playsInline 
           className="fixed inset-0 w-full h-full object-cover -z-10 pointer-events-none" 
-          src="/moving snails.webm" 
+          src={assetUrl('moving snails.webm')}
         />
       )}
       {/* Outer wrapper */}
@@ -224,8 +226,8 @@ export default function App() {
               <div className="flex flex-col h-full w-full relative z-10 flex-grow">
                 <div className="flex-grow p-6 md:p-12 lg:p-20 flex flex-col justify-center">
                   <div className="max-w-4xl w-full relative z-10">
-                    <img src="/author%20portrait.jpg" alt="Keiko Phillips" className="w-48 md:w-64 h-auto grayscale contrast-[1.2] -rotate-3 hover:-rotate-1 transition-transform mb-8 md:mb-12 relative z-20" />
-                    <img src="/statue%20mnj.png" alt="Statue" className="absolute -top-48 md:-top-80 lg:-top-[350px] xl:-top-[450px] right-[-20px] lg:right-[-100px] w-56 md:w-80 lg:w-[450px] xl:w-[600px] h-auto rotate-6 hover:rotate-2 transition-transform z-0 pointer-events-none" />
+                    <img src={assetUrl('author portrait.jpg')} alt="Keiko Phillips" className="w-48 md:w-64 h-auto grayscale contrast-[1.2] -rotate-3 hover:-rotate-1 transition-transform mb-8 md:mb-12 relative z-20" />
+                    <img src={assetUrl('statue mnj.png')} alt="Statue" className="absolute -top-48 md:-top-80 lg:-top-[350px] xl:-top-[450px] right-[-20px] lg:right-[-100px] w-56 md:w-80 lg:w-[450px] xl:w-[600px] h-auto rotate-6 hover:rotate-2 transition-transform z-0 pointer-events-none" />
                     <div className="font-serif text-xl md:text-3xl space-y-6 md:space-y-8">
                       <p className="relative z-10 leading-[1.8em]">
                         <span className="absolute inset-y-0 left-[-16px] md:left-[-32px] w-[100vw] -z-10"
@@ -273,9 +275,9 @@ export default function App() {
                     </div>
                     
                     <div className="flex flex-col gap-12 mt-8 items-center w-full">
-                      <img src="/insta post 1.png" alt="EdiJazzSoc Instagram Post 1" className="w-full max-w-2xl h-auto" />
-                      <img src="/insta post 2.png" alt="EdiJazzSoc Instagram Post 2" className="w-full max-w-2xl h-auto" />
-                      <img src="/insta post 3.png" alt="EdiJazzSoc Instagram Post 3" className="w-full max-w-2xl h-auto" />
+                      <img src={assetUrl('insta post 1.png')} alt="EdiJazzSoc Instagram Post 1" className="w-full max-w-2xl h-auto" />
+                      <img src={assetUrl('insta post 2.png')} alt="EdiJazzSoc Instagram Post 2" className="w-full max-w-2xl h-auto" />
+                      <img src={assetUrl('insta post 3.png')} alt="EdiJazzSoc Instagram Post 3" className="w-full max-w-2xl h-auto" />
                     </div>
                   </div>
                 </div>
@@ -283,16 +285,16 @@ export default function App() {
                 <div className="p-4 md:p-6 lg:p-10 bg-zine-ink">
                   <h3 className="font-goodgirl text-4xl mb-6 uppercase">{t.graphicsEventPostersTitle}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <img src="/new steps.png" alt="New Steps Session Poster" className="w-full h-auto" />
-                    <img src="/mnj.png" alt="Monday Night Jazz Poster" className="w-full h-auto" />
-                    <img src="/jazz bar.png" alt="Jazz Bar Jam Poster" className="w-full h-auto" />
-                    <img src="/brass monkey.png" alt="Brass Monkey Social Poster" className="w-full h-auto" />
+                    <img src={assetUrl('new steps.png')} alt="New Steps Session Poster" className="w-full h-auto" />
+                    <img src={assetUrl('mnj.png')} alt="Monday Night Jazz Poster" className="w-full h-auto" />
+                    <img src={assetUrl('jazz bar.png')} alt="Jazz Bar Jam Poster" className="w-full h-auto" />
+                    <img src={assetUrl('brass monkey.png')} alt="Brass Monkey Social Poster" className="w-full h-auto" />
                   </div>
                   
                   <div className="mt-10 border-t-[3px] border-zine-ink pt-6">
                     <h3 className="font-goodgirl text-4xl mb-4 uppercase">{t.graphicsBilingualTitle}</h3>
                     <p className="font-serif text-xl mb-6">{t.graphicsBilingualDesc}</p>
-                    <img src="/phillips times.jpg" alt="The Phillips Times" className="w-full max-w-2xl h-auto" />
+                    <img src={assetUrl('phillips times.jpg')} alt="The Phillips Times" className="w-full max-w-2xl h-auto" />
                   </div>
                 </div>
               </div>
@@ -323,7 +325,7 @@ export default function App() {
                   </div>
                   
                   <div className="flex-grow flex w-full">
-                    <img src="/lifeinthekitchen.png" alt="Life in the Kitchen screenshot" className="w-full object-cover object-top border-none" />
+                    <img src={assetUrl('lifeinthekitchen.png')} alt="Life in the Kitchen screenshot" className="w-full object-cover object-top border-none" />
                   </div>
                 </div>
               </div>
@@ -345,7 +347,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmStalinDesc}
                     </p>
-                    <VideoThumbnail href="https://drive.google.com/file/d/1FA8a854smRx0HdttsKyB0STaabJscK5r/view?usp=drive_link" src="/stalin.png" alt="Culture and Power under Stalin video essay still" className="w-full md:w-3/4" />
+                    <VideoThumbnail href="https://drive.google.com/file/d/1FA8a854smRx0HdttsKyB0STaabJscK5r/view?usp=drive_link" src={assetUrl('stalin.png')} alt="Culture and Power under Stalin video essay still" className="w-full md:w-3/4" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
@@ -353,7 +355,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmHorrorDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/iaJ2HIOF8Jg?si=yvkP1LS8nK_p5ap9" src="/horror film still.png" alt="Horror short film still" />
+                    <VideoThumbnail href="https://youtu.be/iaJ2HIOF8Jg?si=yvkP1LS8nK_p5ap9" src={assetUrl('horror film still.png')} alt="Horror short film still" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
@@ -364,7 +366,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmTakeMeDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/6OZKfxOHH8s?si=zlavpCGZ6KC5RfsT" src="/take me as you please.png" alt="Take me as you please film still" />
+                    <VideoThumbnail href="https://youtu.be/6OZKfxOHH8s?si=zlavpCGZ6KC5RfsT" src={assetUrl('take me as you please.png')} alt="Take me as you please film still" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
@@ -375,7 +377,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmForgoDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/ytLc0Ao_O7Q?si=j8MBcAeL7ni1rzmF" src="/forgo still.png" alt="Forgo film still" />
+                    <VideoThumbnail href="https://youtu.be/ytLc0Ao_O7Q?si=j8MBcAeL7ni1rzmF" src={assetUrl('forgo still.png')} alt="Forgo film still" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
@@ -383,7 +385,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmSuffolkDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/aY8UZU0QDX0?si=loCIYOzeaKtreeOE" src="/horsey island.png" alt="Suffolk documentary still" />
+                    <VideoThumbnail href="https://youtu.be/aY8UZU0QDX0?si=loCIYOzeaKtreeOE" src={assetUrl('horsey island.png')} alt="Suffolk documentary still" />
                   </div>
                 </div>
               </div>
@@ -436,7 +438,7 @@ export default function App() {
                       <p className="font-serif text-xl leading-relaxed mb-6 text-black">
                         {t.writingPutinDesc}
                       </p>
-                      <a href={(t.writingPutinLink && t.writingPutinLink !== '#') ? t.writingPutinLink : '/Vladimir%20Putin%20gets%20a%20Sex%20Swing.pdf'} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
+                      <a href={(t.writingPutinLink && t.writingPutinLink !== '#') ? t.writingPutinLink : assetUrl('Vladimir Putin gets a Sex Swing.pdf')} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
                         {(t.writingReadMoreBtn || 'Read Full Piece').replace(/\s*↗/, '')}
                       </a>
                     </div>
@@ -452,7 +454,7 @@ export default function App() {
                       <p className="font-serif text-xl leading-relaxed mb-6 text-black">
                         {t.writingIsleOfDogsDesc}
                       </p>
-                      <a href={(t.writingIsleOfDogsLink && t.writingIsleOfDogsLink !== '#') ? t.writingIsleOfDogsLink : '/Thinking%20Translation%20Essay.pdf'} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
+                      <a href={(t.writingIsleOfDogsLink && t.writingIsleOfDogsLink !== '#') ? t.writingIsleOfDogsLink : assetUrl('Thinking Translation Essay.pdf')} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
                         {(t.writingReadMoreBtn || 'Read Full Piece').replace(/\s*↗/, '')}
                       </a>
                     </div>
@@ -724,20 +726,20 @@ export default function App() {
                     {/* Animated Snails */}
                     <div className="absolute inset-0 pointer-events-none z-0">
                       <motion.img 
-                        src="/snail%20cursor.png" 
+                        src={assetUrl('snail cursor.png')}
                         className="absolute top-10 md:top-20 w-32 md:w-48 opacity-20 invert"
                         animate={{ x: ['-200px', '100vw'] }}
                         transition={{ repeat: Infinity, duration: 18, ease: "linear" }}
                       />
                       <motion.img 
-                        src="/snail%20cursor.png" 
+                        src={assetUrl('snail cursor.png')}
                         className="absolute bottom-12 md:bottom-24 w-24 md:w-32 opacity-20 invert"
                         animate={{ x: ['100vw', '-200px'] }}
                         transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
                         style={{ scaleX: -1 }} 
                       />
                       <motion.img 
-                        src="/snail%20cursor.png" 
+                        src={assetUrl('snail cursor.png')}
                         className="absolute top-1/2 w-40 md:w-56 opacity-10 invert"
                         animate={{ x: ['-300px', '100vw'] }}
                         transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
