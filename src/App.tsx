@@ -3,6 +3,17 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from './hooks/useTranslations';
 import TranslationManager from './components/TranslationManager';
 
+export const publicUrl = (path: string): string => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('blob:')) {
+    return path;
+  }
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  const base = import.meta.env.BASE_URL || './';
+  const fullPath = base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
+  return encodeURI(decodeURI(fullPath));
+};
+
 const Barcode = () => (
   <div className="flex h-10 md:h-12 items-end gap-[2px] opacity-90 mix-blend-multiply">
     {[2, 4, 1, 3, 2, 5, 1, 2, 4, 1, 1, 3, 2, 2, 1, 4, 2, 1, 3, 4, 1, 2, 3, 1].map((w, i) => (
@@ -26,7 +37,7 @@ const ImagePlaceholder = ({
     <div className="absolute bottom-2 right-2 text-sm md:text-base font-mono text-zine-ink leading-none z-30">┘</div>
     
     {imageSrc ? (
-      <img src={imageSrc} alt={text} className="absolute inset-0 w-full h-full object-cover z-20" />
+      <img src={publicUrl(imageSrc)} alt={text} className="absolute inset-0 w-full h-full object-cover z-20" />
     ) : (
       <>
         <div className="placeholder-graphic relative z-10 flex flex-col items-center justify-center gap-3 text-center p-4">
@@ -66,8 +77,11 @@ const ResponsiveImage = ({
   decoding = 'async',
   style
 }: ResponsiveImageProps) => {
+  const resolvedSrc = publicUrl(src);
+  const resolvedWebp = webpSrc ? publicUrl(webpSrc) : undefined;
+
   const imgProps = {
-    src,
+    src: resolvedSrc,
     alt,
     loading,
     decoding,
@@ -76,10 +90,10 @@ const ResponsiveImage = ({
     ...(fetchPriority !== 'auto' ? { fetchPriority } : {})
   } as React.ImgHTMLAttributes<HTMLImageElement>;
 
-  if (webpSrc) {
+  if (resolvedWebp) {
     return (
       <picture className="contents">
-        <source srcSet={webpSrc} type="image/webp" />
+        <source srcSet={resolvedWebp} type="image/webp" />
         <img {...imgProps} />
       </picture>
     );
@@ -192,7 +206,7 @@ const CustomCursor = () => {
       style={{ transform: `translate3d(-100px, -100px, 0)`, willChange: 'transform' }}
     >
       <img 
-        src="/snail%20cursor.png" 
+        src={publicUrl('/snail cursor.png')} 
         alt="" 
         className="w-16 md:w-20 h-auto grayscale contrast-[1.2] transition-transform duration-150 ease-out"
         style={{ transform: 'translate(-50%, -50%)' }}
@@ -227,7 +241,7 @@ export default function App() {
     <div 
       className="min-h-screen text-zine-ink font-syne selection:bg-zine-acid selection:text-zine-ink overflow-x-hidden relative"
       style={{ 
-        backgroundImage: activePage === 'film' ? 'none' : 'url("/snail-bg.png")', 
+        backgroundImage: activePage === 'film' ? 'none' : `url("${publicUrl('/snail-bg.png')}")`, 
         backgroundSize: '800px', 
         backgroundRepeat: 'repeat', 
         backgroundPosition: 'center' 
@@ -242,7 +256,7 @@ export default function App() {
           muted 
           playsInline 
           className="fixed inset-0 w-full h-full object-cover -z-10 pointer-events-none" 
-          src="/moving snails.webm" 
+          src={publicUrl('/moving snails.webm')} 
         />
       )}
       {/* Outer wrapper */}
@@ -587,7 +601,7 @@ export default function App() {
                       <p className="font-serif text-xl leading-relaxed mb-6 text-black">
                         {t.writingPutinDesc}
                       </p>
-                      <a href={(t.writingPutinLink && t.writingPutinLink !== '#') ? t.writingPutinLink : '/Vladimir%20Putin%20gets%20a%20Sex%20Swing.pdf'} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
+                      <a href={publicUrl((t.writingPutinLink && t.writingPutinLink !== '#') ? t.writingPutinLink : '/Vladimir Putin gets a Sex Swing.pdf')} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
                         {(t.writingReadMoreBtn || 'Read Full Piece').replace(/\s*↗/, '')}
                       </a>
                     </div>
@@ -603,7 +617,7 @@ export default function App() {
                       <p className="font-serif text-xl leading-relaxed mb-6 text-black">
                         {t.writingIsleOfDogsDesc}
                       </p>
-                      <a href={(t.writingIsleOfDogsLink && t.writingIsleOfDogsLink !== '#') ? t.writingIsleOfDogsLink : '/Thinking%20Translation%20Essay.pdf'} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
+                      <a href={publicUrl((t.writingIsleOfDogsLink && t.writingIsleOfDogsLink !== '#') ? t.writingIsleOfDogsLink : '/Thinking Translation Essay.pdf')} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
                         {(t.writingReadMoreBtn || 'Read Full Piece').replace(/\s*↗/, '')}
                       </a>
                     </div>
@@ -626,7 +640,7 @@ export default function App() {
                   {/* Two PDF Versions: English CV & German Lebenslauf */}
                   <div className="flex flex-wrap sm:flex-nowrap gap-3 z-10">
                     <a
-                      href="/Keiko_Phillips_CV_English.pdf"
+                      href={publicUrl('/Keiko_Phillips_CV_English.pdf')}
                       download="Keiko_Phillips_CV_English.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -636,7 +650,7 @@ export default function App() {
                       <span>{t.cvDownloadEn || 'Download English CV (PDF)'}</span>
                     </a>
                     <a
-                      href="/Keiko_Phillips_Lebenslauf_Deutsch.pdf"
+                      href={publicUrl('/Keiko_Phillips_Lebenslauf_Deutsch.pdf')}
                       download="Keiko_Phillips_Lebenslauf_Deutsch.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -908,20 +922,20 @@ export default function App() {
                     {/* Animated Snails */}
                     <div className="absolute inset-0 pointer-events-none z-0">
                       <motion.img 
-                        src="/snail%20cursor.png" 
+                        src={publicUrl('/snail cursor.png')} 
                         className="absolute top-10 md:top-20 w-32 md:w-48 opacity-20 invert"
                         animate={{ x: ['-200px', '100vw'] }}
                         transition={{ repeat: Infinity, duration: 18, ease: "linear" }}
                       />
                       <motion.img 
-                        src="/snail%20cursor.png" 
+                        src={publicUrl('/snail cursor.png')} 
                         className="absolute bottom-12 md:bottom-24 w-24 md:w-32 opacity-20 invert"
                         animate={{ x: ['100vw', '-200px'] }}
                         transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
                         style={{ scaleX: -1 }} 
                       />
                       <motion.img 
-                        src="/snail%20cursor.png" 
+                        src={publicUrl('/snail cursor.png')} 
                         className="absolute top-1/2 w-40 md:w-56 opacity-10 invert"
                         animate={{ x: ['-300px', '100vw'] }}
                         transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
