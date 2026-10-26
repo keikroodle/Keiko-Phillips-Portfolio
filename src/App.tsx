@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from './hooks/useTranslations';
 import TranslationManager from './components/TranslationManager';
 
-const assetUrl = (assetPath: string) => `${import.meta.env.BASE_URL}${assetPath}`;
-
 const Barcode = () => (
   <div className="flex h-10 md:h-12 items-end gap-[2px] opacity-90 mix-blend-multiply">
     {[2, 4, 1, 3, 2, 5, 1, 2, 4, 1, 1, 3, 2, 2, 1, 4, 2, 1, 3, 4, 1, 2, 3, 1].map((w, i) => (
@@ -47,11 +45,72 @@ const ImagePlaceholder = ({
   </div>
 );
 
-const VideoThumbnail = ({ src, alt, href, className = "w-full" }) => (
+interface ResponsiveImageProps {
+  src: string;
+  webpSrc?: string;
+  alt: string;
+  className?: string;
+  loading?: 'lazy' | 'eager';
+  fetchPriority?: 'high' | 'low' | 'auto';
+  decoding?: 'async' | 'sync' | 'auto';
+  style?: React.CSSProperties;
+}
+
+const ResponsiveImage = ({
+  src,
+  webpSrc,
+  alt,
+  className = '',
+  loading = 'lazy',
+  fetchPriority = 'auto',
+  decoding = 'async',
+  style
+}: ResponsiveImageProps) => {
+  const imgProps = {
+    src,
+    alt,
+    loading,
+    decoding,
+    className,
+    style,
+    ...(fetchPriority !== 'auto' ? { fetchPriority } : {})
+  } as React.ImgHTMLAttributes<HTMLImageElement>;
+
+  if (webpSrc) {
+    return (
+      <picture className="contents">
+        <source srcSet={webpSrc} type="image/webp" />
+        <img {...imgProps} />
+      </picture>
+    );
+  }
+  return <img {...imgProps} />;
+};
+
+const VideoThumbnail = ({ 
+  src, 
+  webpSrc, 
+  alt, 
+  href, 
+  className = "w-full" 
+}: { 
+  src: string; 
+  webpSrc?: string; 
+  alt: string; 
+  href: string; 
+  className?: string; 
+}) => (
   <a href={href} target="_blank" rel="noreferrer" className={`relative group block cursor-pointer ${className}`}>
-    <img src={src} alt={alt} className="w-full h-auto group-hover:opacity-80 transition-opacity" />
+    <ResponsiveImage 
+      src={src} 
+      webpSrc={webpSrc} 
+      alt={alt} 
+      loading="lazy"
+      decoding="async"
+      className="w-full h-auto group-hover:opacity-80 transition-opacity" 
+    />
     <div className="absolute bottom-4 left-4 pointer-events-none">
-      <div className="text-white group-hover:scale-110 transition-transform duration-200 ">
+      <div className="text-white group-hover:scale-110 transition-transform duration-200">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M6 4l15 8-15 8V4z" />
         </svg>
@@ -59,6 +118,39 @@ const VideoThumbnail = ({ src, alt, href, className = "w-full" }) => (
     </div>
   </a>
 );
+
+const RealBookImage = ({ 
+  src, 
+  webpSrc, 
+  alt, 
+  fallbackSrc 
+}: { 
+  src: string; 
+  webpSrc?: string; 
+  alt: string; 
+  fallbackSrc?: string; 
+}) => {
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [hasError, setHasError] = useState(false);
+
+  return !hasError ? (
+    <ResponsiveImage 
+      src={currentSrc} 
+      webpSrc={webpSrc} 
+      alt={alt} 
+      loading="lazy"
+      decoding="async"
+      className="w-full h-auto border-[3px] border-zine-ink bg-white" 
+      // If error occurs, fallback cleanly
+    />
+  ) : (
+    <div className="w-full aspect-[3/4] bg-white border-[3px] border-zine-ink p-6 flex flex-col justify-between text-zine-ink font-serif relative">
+      <div className="font-mono text-xs font-bold uppercase tracking-widest text-zine-vermilion">[ REAL BOOK ARCHIVE ]</div>
+      <div className="text-center font-goodgirl text-2xl md:text-3xl uppercase leading-tight my-4">{alt}</div>
+      <div className="font-mono text-xs text-center opacity-60">Place {src} in public folder</div>
+    </div>
+  );
+};
 
 const CustomCursor = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -100,7 +192,7 @@ const CustomCursor = () => {
       style={{ transform: `translate3d(-100px, -100px, 0)`, willChange: 'transform' }}
     >
       <img 
-        src={assetUrl('snail cursor.png')}
+        src="/snail%20cursor.png" 
         alt="" 
         className="w-16 md:w-20 h-auto grayscale contrast-[1.2] transition-transform duration-150 ease-out"
         style={{ transform: 'translate(-50%, -50%)' }}
@@ -117,8 +209,10 @@ export default function App() {
   const { translations, loading } = useTranslations();
   const currentLangKey = activeLang.toLowerCase() as 'en' | 'jp' | 'de' | 'ru';
   const t = translations[currentLangKey] || translations['en'];
+  const headerSubtitle = t.headerSubtitle || '';
   const bio1 = t.bio1 || '';
   const bio2 = t.bio2 || '';
+  const bio3 = t.bio3 || '';
   const navHome = t.navHome || '';
   const navGraphics = t.navGraphics || '';
   const navWeb = t.navWeb || '';
@@ -133,7 +227,7 @@ export default function App() {
     <div 
       className="min-h-screen text-zine-ink font-syne selection:bg-zine-acid selection:text-zine-ink overflow-x-hidden relative"
       style={{ 
-        backgroundImage: activePage === 'film' ? 'none' : `url("${assetUrl('snail-bg.png')}")`,
+        backgroundImage: activePage === 'film' ? 'none' : 'url("/snail-bg.png")', 
         backgroundSize: '800px', 
         backgroundRepeat: 'repeat', 
         backgroundPosition: 'center' 
@@ -148,7 +242,7 @@ export default function App() {
           muted 
           playsInline 
           className="fixed inset-0 w-full h-full object-cover -z-10 pointer-events-none" 
-          src={assetUrl('moving snails.webm')}
+          src="/moving snails.webm" 
         />
       )}
       {/* Outer wrapper */}
@@ -158,9 +252,12 @@ export default function App() {
         <header className="flex flex-col justify-center items-center p-4 md:p-6 gap-6 relative min-h-[150px] lg:min-h-[250px]">
           {/* Magazine Title Block */}
           <div className="text-center w-full z-10 cursor-pointer" onClick={() => setActivePage('home')}>
-            <h1 className="font-goodgirl text-[16vw] lg:text-[8vw] leading-[0.85] tracking-tight uppercase hover:text-zine-vermilion transition-colors pb-2">
+            <h1 className="font-goodgirl text-[16vw] lg:text-[8vw] leading-[0.85] tracking-tight uppercase hover:text-zine-vermilion transition-colors pb-1">
               Keiko Phillips
             </h1>
+            <p className="font-syne text-sm md:text-base lg:text-xl tracking-[0.25em] md:tracking-[0.35em] uppercase text-zine-ink font-bold mt-1">
+              {headerSubtitle}
+            </p>
           </div>
           
           {/* Language Selector */}
@@ -226,8 +323,23 @@ export default function App() {
               <div className="flex flex-col h-full w-full relative z-10 flex-grow">
                 <div className="flex-grow p-6 md:p-12 lg:p-20 flex flex-col justify-center">
                   <div className="max-w-4xl w-full relative z-10">
-                    <img src={assetUrl('author portrait.jpg')} alt="Keiko Phillips" className="w-48 md:w-64 h-auto grayscale contrast-[1.2] -rotate-3 hover:-rotate-1 transition-transform mb-8 md:mb-12 relative z-20" />
-                    <img src={assetUrl('statue mnj.png')} alt="Statue" className="absolute -top-48 md:-top-80 lg:-top-[350px] xl:-top-[450px] right-[-20px] lg:right-[-100px] w-56 md:w-80 lg:w-[450px] xl:w-[600px] h-auto rotate-6 hover:rotate-2 transition-transform z-0 pointer-events-none" />
+                    <ResponsiveImage 
+                      src="/author%20portrait.jpg" 
+                      webpSrc="/author_portrait.webp" 
+                      alt="Keiko Phillips" 
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="w-48 md:w-64 h-auto grayscale contrast-[1.2] -rotate-3 hover:-rotate-1 transition-transform mb-8 md:mb-12 relative z-20" 
+                    />
+                    <ResponsiveImage 
+                      src="/statue%20mnj.png" 
+                      webpSrc="/statue_mnj.webp" 
+                      alt="Statue" 
+                      loading="eager"
+                      decoding="async"
+                      className="absolute -top-48 md:-top-80 lg:-top-[350px] xl:-top-[450px] right-[-20px] lg:right-[-100px] w-56 md:w-80 lg:w-[450px] xl:w-[600px] h-auto rotate-6 hover:rotate-2 transition-transform z-0 pointer-events-none" 
+                    />
                     <div className="font-serif text-xl md:text-3xl space-y-6 md:space-y-8">
                       <p className="relative z-10 leading-[1.8em]">
                         <span className="absolute inset-y-0 left-[-16px] md:left-[-32px] w-[100vw] -z-10"
@@ -249,6 +361,18 @@ export default function App() {
                               }}></span>
                         <span className="text-zine-acid px-2 relative z-10">{bio2}</span>
                       </p>
+                      {bio3 && (
+                        <p className="relative z-10 leading-[1.8em]">
+                          <span className="absolute inset-y-0 left-[-16px] md:left-[-32px] w-[100vw] -z-10"
+                                style={{
+                                  backgroundImage: 'linear-gradient(to bottom, transparent 12%, var(--color-zine-ink) 12%, var(--color-zine-ink) 88%, transparent 88%)',
+                                  backgroundSize: '100% 1.8em',
+                                  backgroundRepeat: 'repeat-y',
+                                  backgroundPosition: 'top'
+                                }}></span>
+                          <span className="text-zine-acid px-2 relative z-10">{bio3}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -275,9 +399,27 @@ export default function App() {
                     </div>
                     
                     <div className="flex flex-col gap-12 mt-8 items-center w-full">
-                      <img src={assetUrl('insta post 1.png')} alt="EdiJazzSoc Instagram Post 1" className="w-full max-w-2xl h-auto" />
-                      <img src={assetUrl('insta post 2.png')} alt="EdiJazzSoc Instagram Post 2" className="w-full max-w-2xl h-auto" />
-                      <img src={assetUrl('insta post 3.png')} alt="EdiJazzSoc Instagram Post 3" className="w-full max-w-2xl h-auto" />
+                      {/* Real Book Committee Introduction Campaign */}
+                      <div className="w-full max-w-4xl">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                          <RealBookImage 
+                            src="/realbook 1 of 2 .png" 
+                            webpSrc="/realbook_1.webp"
+                            fallbackSrc="/realbook 1 of 2.png" 
+                            alt="The 2023-24 JazzSoc Committee (Part One)" 
+                          />
+                          <RealBookImage 
+                            src="/realbook 2 of 2.png" 
+                            webpSrc="/realbook_2.webp"
+                            fallbackSrc="/realbook 2 of 2 .png" 
+                            alt="Publicity Officer Keiko Phillips Feature" 
+                          />
+                        </div>
+                      </div>
+
+                      <ResponsiveImage src="/insta post 1.png" webpSrc="/insta_post_1.webp" alt="EdiJazzSoc Instagram Post 1" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
+                      <ResponsiveImage src="/insta post 2.png" webpSrc="/insta_post_2.webp" alt="EdiJazzSoc Instagram Post 2" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
+                      <ResponsiveImage src="/insta post 3.png" webpSrc="/insta_post_3.webp" alt="EdiJazzSoc Instagram Post 3" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
                     </div>
                   </div>
                 </div>
@@ -285,16 +427,16 @@ export default function App() {
                 <div className="p-4 md:p-6 lg:p-10 bg-zine-ink">
                   <h3 className="font-goodgirl text-4xl mb-6 uppercase">{t.graphicsEventPostersTitle}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <img src={assetUrl('new steps.png')} alt="New Steps Session Poster" className="w-full h-auto" />
-                    <img src={assetUrl('mnj.png')} alt="Monday Night Jazz Poster" className="w-full h-auto" />
-                    <img src={assetUrl('jazz bar.png')} alt="Jazz Bar Jam Poster" className="w-full h-auto" />
-                    <img src={assetUrl('brass monkey.png')} alt="Brass Monkey Social Poster" className="w-full h-auto" />
+                    <ResponsiveImage src="/new steps.png" webpSrc="/new_steps.webp" alt="New Steps Session Poster" loading="lazy" decoding="async" className="w-full h-auto" />
+                    <ResponsiveImage src="/mnj.png" webpSrc="/mnj.webp" alt="Monday Night Jazz Poster" loading="lazy" decoding="async" className="w-full h-auto" />
+                    <ResponsiveImage src="/jazz bar.png" webpSrc="/jazz_bar.webp" alt="Jazz Bar Jam Poster" loading="lazy" decoding="async" className="w-full h-auto" />
+                    <ResponsiveImage src="/brass monkey.png" webpSrc="/brass_monkey.webp" alt="Brass Monkey Social Poster" loading="lazy" decoding="async" className="w-full h-auto" />
                   </div>
                   
                   <div className="mt-10 border-t-[3px] border-zine-ink pt-6">
                     <h3 className="font-goodgirl text-4xl mb-4 uppercase">{t.graphicsBilingualTitle}</h3>
                     <p className="font-serif text-xl mb-6">{t.graphicsBilingualDesc}</p>
-                    <img src={assetUrl('phillips times.jpg')} alt="The Phillips Times" className="w-full max-w-2xl h-auto" />
+                    <ResponsiveImage src="/phillips times.jpg" webpSrc="/phillips_times.webp" alt="The Phillips Times" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
                   </div>
                 </div>
               </div>
@@ -325,7 +467,14 @@ export default function App() {
                   </div>
                   
                   <div className="flex-grow flex w-full">
-                    <img src={assetUrl('lifeinthekitchen.png')} alt="Life in the Kitchen screenshot" className="w-full object-cover object-top border-none" />
+                    <ResponsiveImage 
+                      src="/lifeinthekitchen.png" 
+                      webpSrc="/lifeinthekitchen.webp" 
+                      alt="Life in the Kitchen screenshot" 
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full object-cover object-top border-none" 
+                    />
                   </div>
                 </div>
               </div>
@@ -347,7 +496,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmStalinDesc}
                     </p>
-                    <VideoThumbnail href="https://drive.google.com/file/d/1FA8a854smRx0HdttsKyB0STaabJscK5r/view?usp=drive_link" src={assetUrl('stalin.png')} alt="Culture and Power under Stalin video essay still" className="w-full md:w-3/4" />
+                    <VideoThumbnail href="https://drive.google.com/file/d/1FA8a854smRx0HdttsKyB0STaabJscK5r/view?usp=drive_link" src="/stalin.png" webpSrc="/stalin.webp" alt="Culture and Power under Stalin video essay still" className="w-full md:w-3/4" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
@@ -355,29 +504,29 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmHorrorDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/iaJ2HIOF8Jg?si=yvkP1LS8nK_p5ap9" src={assetUrl('horror film still.png')} alt="Horror short film still" />
-                  </div>
-
-                  <div className="p-4 md:p-6 lg:p-10">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="bg-zine-ink text-zine-bg font-mono font-bold px-2 py-1 text-xs">ACTING / PRODUCTION</div>
-                      <h3 className="font-goodgirl text-3xl md:text-5xl uppercase ">{t.filmTakeMeTitle}</h3>
-                    </div>
-                    <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
-                      {t.filmTakeMeDesc}
-                    </p>
-                    <VideoThumbnail href="https://youtu.be/6OZKfxOHH8s?si=zlavpCGZ6KC5RfsT" src={assetUrl('take me as you please.png')} alt="Take me as you please film still" />
+                    <VideoThumbnail href="https://youtu.be/iaJ2HIOF8Jg?si=yvkP1LS8nK_p5ap9" src="/horror film still.png" webpSrc="/horror_film_still.webp" alt="Horror short film still" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="bg-zine-ink text-zine-bg font-mono font-bold px-2 py-1 text-xs">COSTUME ASSISTANT</div>
+                      <h3 className="font-goodgirl text-3xl md:text-5xl uppercase ">{t.filmTakeMeTitle}</h3>
+                    </div>
+                    <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
+                      {t.filmTakeMeDesc}
+                    </p>
+                    <VideoThumbnail href="https://youtu.be/6OZKfxOHH8s?si=zlavpCGZ6KC5RfsT" src="/take me as you please.png" webpSrc="/take_me_as_you_please.webp" alt="Take me as you please film still" />
+                  </div>
+
+                  <div className="p-4 md:p-6 lg:p-10">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="bg-zine-ink text-zine-bg font-mono font-bold px-2 py-1 text-xs">ACTING / PRODUCTION</div>
                       <h3 className="font-goodgirl text-3xl md:text-5xl uppercase ">{t.filmForgoTitle}</h3>
                     </div>
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmForgoDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/ytLc0Ao_O7Q?si=j8MBcAeL7ni1rzmF" src={assetUrl('forgo still.png')} alt="Forgo film still" />
+                    <VideoThumbnail href="https://youtu.be/ytLc0Ao_O7Q?si=j8MBcAeL7ni1rzmF" src="/forgo still.png" webpSrc="/forgo_still.webp" alt="Forgo film still" />
                   </div>
 
                   <div className="p-4 md:p-6 lg:p-10">
@@ -385,7 +534,7 @@ export default function App() {
                     <p className="font-serif text-xl md:text-2xl max-w-3xl mb-6 font-bold ">
                       {t.filmSuffolkDesc}
                     </p>
-                    <VideoThumbnail href="https://youtu.be/aY8UZU0QDX0?si=loCIYOzeaKtreeOE" src={assetUrl('horsey island.png')} alt="Suffolk documentary still" />
+                    <VideoThumbnail href="https://youtu.be/aY8UZU0QDX0?si=loCIYOzeaKtreeOE" src="/horsey island.png" webpSrc="/horsey_island.webp" alt="Suffolk documentary still" />
                   </div>
                 </div>
               </div>
@@ -438,7 +587,7 @@ export default function App() {
                       <p className="font-serif text-xl leading-relaxed mb-6 text-black">
                         {t.writingPutinDesc}
                       </p>
-                      <a href={(t.writingPutinLink && t.writingPutinLink !== '#') ? t.writingPutinLink : assetUrl('Vladimir Putin gets a Sex Swing.pdf')} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
+                      <a href={(t.writingPutinLink && t.writingPutinLink !== '#') ? t.writingPutinLink : '/Vladimir%20Putin%20gets%20a%20Sex%20Swing.pdf'} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
                         {(t.writingReadMoreBtn || 'Read Full Piece').replace(/\s*↗/, '')}
                       </a>
                     </div>
@@ -454,7 +603,7 @@ export default function App() {
                       <p className="font-serif text-xl leading-relaxed mb-6 text-black">
                         {t.writingIsleOfDogsDesc}
                       </p>
-                      <a href={(t.writingIsleOfDogsLink && t.writingIsleOfDogsLink !== '#') ? t.writingIsleOfDogsLink : assetUrl('Thinking Translation Essay.pdf')} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
+                      <a href={(t.writingIsleOfDogsLink && t.writingIsleOfDogsLink !== '#') ? t.writingIsleOfDogsLink : '/Thinking%20Translation%20Essay.pdf'} target="_blank" rel="noreferrer" className="font-serif font-bold text-lg md:text-xl underline underline-offset-4 decoration-2 hover:text-zine-vermilion hover:decoration-zine-vermilion transition-colors inline-block w-fit text-black">
                         {(t.writingReadMoreBtn || 'Read Full Piece').replace(/\s*↗/, '')}
                       </a>
                     </div>
@@ -465,29 +614,200 @@ export default function App() {
 
             {activePage === 'cv' && (
               <div className="flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white text-black">
-                <div className="border-b-[4px] border-black p-4 md:p-6 lg:p-10 bg-white text-black relative overflow-hidden">
-                  <h2 className="font-goodgirl text-6xl md:text-8xl z-10 relative text-black">{t.cvHeading}</h2>
+                {/* Header with Title and PDF Download Links */}
+                <div className="border-b-[4px] border-black p-4 md:p-6 lg:p-10 bg-white text-black relative flex flex-col md:flex-row md:items-end justify-between gap-6">
+                  <div>
+                    <h2 className="font-goodgirl text-6xl md:text-8xl z-10 relative text-black">{t.cvHeading}</h2>
+                    <p className="font-mono text-xs md:text-sm uppercase tracking-widest text-black/70 mt-2">
+                      Keiko Phillips • Edinburgh / London / Berlin
+                    </p>
+                  </div>
+                  
+                  {/* Two PDF Versions: English CV & German Lebenslauf */}
+                  <div className="flex flex-wrap sm:flex-nowrap gap-3 z-10">
+                    <a
+                      href="/Keiko_Phillips_CV_English.pdf"
+                      download="Keiko_Phillips_CV_English.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs md:text-sm font-bold uppercase tracking-wider px-4 py-2.5 border-[2px] border-black bg-white hover:bg-black hover:text-white transition-colors flex items-center gap-2 group text-black cursor-pointer"
+                    >
+                      <span>↓</span>
+                      <span>{t.cvDownloadEn || 'Download English CV (PDF)'}</span>
+                    </a>
+                    <a
+                      href="/Keiko_Phillips_Lebenslauf_Deutsch.pdf"
+                      download="Keiko_Phillips_Lebenslauf_Deutsch.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs md:text-sm font-bold uppercase tracking-wider px-4 py-2.5 border-[2px] border-black bg-black text-white hover:bg-white hover:text-black transition-colors flex items-center gap-2 group cursor-pointer"
+                    >
+                      <span>↓</span>
+                      <span>{t.cvDownloadDe || 'Download German Lebenslauf (PDF)'}</span>
+                    </a>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 divide-y-[4px] divide-black flex-grow bg-white text-black">
-                  {/* Education */}
+                  
+                  {/* 01: Profile and Languages (First for recruiters) */}
+                  <div className="p-4 md:p-6 lg:p-10 bg-white text-black">
+                    <h3 className="font-goodgirl text-4xl uppercase mb-6 flex items-center gap-4 text-black">
+                      <span className="border-[2px] border-black text-black px-3 py-1 font-mono text-lg">01</span> {t.cvSectionProfile || 'Profile & Skills'}
+                    </h3>
+                    
+                    {/* 2-line Profile summary */}
+                    <div className="mb-8 max-w-4xl border-l-[4px] border-black pl-4 py-1">
+                      <p className="font-serif text-xl md:text-2xl leading-relaxed text-black">
+                        {t.cvProfileText}
+                      </p>
+                    </div>
+
+                    {/* Languages & Expanded Technical Skills */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+                      {/* Languages */}
+                      <div className="border-[2px] border-black p-5 bg-white flex flex-col justify-between">
+                        <div>
+                          <h4 className="font-mono text-sm font-bold tracking-widest border-b-[2px] border-black mb-4 pb-1 uppercase text-black">
+                            {t.cvSkillsLanguages}
+                          </h4>
+                          <div className="font-serif text-lg text-black space-y-2">
+                            <div className="flex items-baseline justify-between border-b border-black/10 pb-1">
+                              <span className="font-bold">{t.cvSkillsLanguagesEn}</span>
+                              <span className="font-mono text-xs uppercase px-1.5 py-0.5 border border-black bg-black text-white">Native</span>
+                            </div>
+                            <div className="flex items-baseline justify-between border-b border-black/10 pb-1">
+                              <span className="font-bold">{t.cvSkillsLanguagesJa}</span>
+                              <span className="font-mono text-xs uppercase px-1.5 py-0.5 border border-black bg-black text-white">Native</span>
+                            </div>
+                            <div className="flex items-baseline justify-between border-b border-black/10 pb-1">
+                              <span className="font-bold">{t.cvSkillsLanguagesDe}</span>
+                              <span className="font-mono text-xs uppercase px-1.5 py-0.5 border border-black">C1</span>
+                            </div>
+                            <div className="flex items-baseline justify-between">
+                              <span className="font-bold">{t.cvSkillsLanguagesRu}</span>
+                              <span className="font-mono text-xs uppercase px-1.5 py-0.5 border border-black">B1</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Technical & Creative Skills */}
+                      <div className="border-[2px] border-black p-5 bg-white flex flex-col justify-between">
+                        <div>
+                          <h4 className="font-mono text-sm font-bold tracking-widest border-b-[2px] border-black mb-4 pb-1 uppercase text-black">
+                            {t.cvSkillsTechnical}
+                          </h4>
+                          <p className="font-serif text-base md:text-lg text-black leading-relaxed mb-4">
+                            {t.cvSkillsTechnicalDesc}
+                          </p>
+                          <div className="border-t border-black/20 pt-3">
+                            <h5 className="font-mono text-xs font-bold uppercase tracking-wider text-black/70 mb-1">{t.cvSkillsInterests}</h5>
+                            <p className="font-serif text-sm text-black">
+                              {t.cvSkillsInterestsCoach} • {t.cvSkillsInterestsHobbies}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 02: Relevant Experience (Creative & Communications) */}
                   <div className="p-4 md:p-6 lg:p-10 bg-white text-black">
                     <h3 className="font-goodgirl text-4xl uppercase mb-8 flex items-center gap-4 text-black">
-                      <span className="border-[2px] border-black text-black px-3 py-1 font-mono text-lg">01</span> {t.cvEducation}
+                      <span className="border-[2px] border-black text-black px-3 py-1 font-mono text-lg">02</span> {t.cvSectionExperience || 'Relevant Experience'}
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                      {/* Estela Superyacht Agency */}
+                      <div>
+                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
+                          <h4 className="font-syne font-bold text-xl uppercase text-black">Estela Superyacht Agency</h4>
+                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">MAY-JUNE 2026 • REMOTE</span>
+                        </div>
+                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobEstelaRole}</p>
+                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
+                          <li>{t.cvJobEstelaB1}</li>
+                          <li>{t.cvJobEstelaB2}</li>
+                          <li>{t.cvJobEstelaB3}</li>
+                        </ul>
+                      </div>
+
+                      {/* Edinburgh Jazz Society */}
+                      <div>
+                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
+                          <h4 className="font-syne font-bold text-xl uppercase text-black">{t.cvJazzTitle || 'Edinburgh University Jazz Society'}</h4>
+                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">2023 - 2026 • EDINBURGH</span>
+                        </div>
+                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJazzRole}</p>
+                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
+                          <li>{t.cvJazzB1}</li>
+                          <li>{t.cvJazzB2}</li>
+                          <li>{t.cvJazzB3}</li>
+                        </ul>
+                      </div>
+
+                      {/* Film & Video Production */}
+                      <div>
+                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
+                          <h4 className="font-syne font-bold text-xl uppercase text-black">{t.cvFilmTitle || "Film: 'Where the Land Meets the Sky'"}</h4>
+                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">2023 - 2026 • EDINBURGH & ABROAD</span>
+                        </div>
+                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvFilmRole || "Director, Cinematographer & Editor"}</p>
+                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
+                          <li>{t.cvFilmB1}</li>
+                          <li>{t.cvFilmB2}</li>
+                        </ul>
+                      </div>
+
+                      {/* Goethe Institut Hackathon */}
+                      <div>
+                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
+                          <h4 className="font-syne font-bold text-xl uppercase text-black">{t.cvGoetheTitle}</h4>
+                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">OCT 2021 • LONDON / VIRTUAL</span>
+                        </div>
+                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvGoetheRole}</p>
+                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
+                          <li>{t.cvGoetheB1}</li>
+                          <li>{t.cvGoetheB2}</li>
+                          <li>{t.cvGoetheB3}</li>
+                        </ul>
+                      </div>
+
+                      {/* Melody Box in Nagasaki (Kept separate as instructed) */}
+                      <div className="md:col-span-2">
+                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
+                          <h4 className="font-syne font-bold text-xl uppercase text-black">Melody Box</h4>
+                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">MAY-JUN 2023 • NAGASAKI, JAPAN</span>
+                        </div>
+                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobMelodyRole}</p>
+                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black max-w-3xl">
+                          <li>{t.cvJobMelodyB1}</li>
+                          <li>{t.cvJobMelodyB2}</li>
+                          <li>{t.cvJobMelodyB3}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 03: Education */}
+                  <div className="p-4 md:p-6 lg:p-10 bg-white text-black">
+                    <h3 className="font-goodgirl text-4xl uppercase mb-8 flex items-center gap-4 text-black">
+                      <span className="border-[2px] border-black text-black px-3 py-1 font-mono text-lg">03</span> {t.cvSectionEducation || 'Education'}
                     </h3>
                     <div className="space-y-8">
                       <div>
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2">
                           <h4 className="font-syne font-bold text-2xl uppercase text-black">University of Edinburgh</h4>
-                          <span className="font-mono text-sm border border-black text-black px-2 py-1 mt-2 sm:mt-0 inline-block">Edinburgh, UK • July 2026</span>
+                          <span className="font-mono text-sm border border-black text-black px-2 py-1 mt-2 sm:mt-0 inline-block">Edinburgh, UK • 2022–2026</span>
                         </div>
                         <p className="font-serif text-xl italic mb-2 text-black">{t.cvDegree}</p>
                         <ul className="list-disc list-outside font-serif text-lg ml-6 marker:text-black space-y-1 text-black">
                           <li>{t.cvUniBullet1}</li>
-                          <li>{t.cvUniBullet2}</li>
-                          <li>{t.cvUniBullet3}</li>
                         </ul>
                       </div>
+                      
+                      {/* Study Abroad */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="border-[2px] border-black p-4 bg-white text-black flex flex-col justify-between">
                           <div>
@@ -506,177 +826,39 @@ export default function App() {
                           <span className="font-mono text-xs border border-black px-2 py-0.5 inline-block w-max text-black">Mar 2025 - Jul 2025</span>
                         </div>
                       </div>
+
+                      {/* Secondary Education */}
                       <div>
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2">
                           <h4 className="font-syne font-bold text-2xl uppercase text-black">Mill Hill County High School</h4>
                           <span className="font-mono text-sm border border-black text-black px-2 py-1 mt-2 sm:mt-0 inline-block">London, UK • June 2022</span>
                         </div>
                         <p className="font-serif text-lg mt-2 text-black">{t.cvHighSchoolALevels}</p>
-                        <p className="font-serif text-lg mt-1 text-black">{t.cvHighSchoolGCSEs}</p>
+                        <p className="font-serif text-lg mt-1 text-black font-medium">{t.cvHighSchoolGCSEs}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Experience */}
+                  {/* 04: Hospitality & Coaching (Condensed at the end) */}
                   <div className="p-4 md:p-6 lg:p-10 bg-white text-black">
-                    <h3 className="font-goodgirl text-4xl uppercase mb-8 flex items-center gap-4 text-black">
-                      <span className="border-[2px] border-black text-black px-3 py-1 font-mono text-lg">02</span> {t.cvExperience}
+                    <h3 className="font-goodgirl text-4xl uppercase mb-6 flex items-center gap-4 text-black">
+                      <span className="border-[2px] border-black text-black px-3 py-1 font-mono text-lg">04</span> {t.cvSectionHospitality || 'Hospitality & Coaching'}
                     </h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                      <div>
-                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                          <h4 className="font-syne font-bold text-xl uppercase text-black">Estela Superyacht Agency</h4>
-                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">MAY-JUNE 2026 • REMOTE</span>
-                        </div>
-                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobEstelaRole}</p>
-                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                          <li>{t.cvJobEstelaB1}</li>
-                          <li>{t.cvJobEstelaB2}</li>
-                          <li>{t.cvJobEstelaB3}</li>
-                        </ul>
+                    <div className="border-[2px] border-black p-6 bg-white max-w-4xl">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2 border-b-[2px] border-black pb-2">
+                        <h4 className="font-syne font-bold text-xl uppercase text-black">{t.cvHospGroupTitle || 'Hospitality & Coaching (2021–2026)'}</h4>
+                        <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 sm:mt-0">EDINBURGH & LONDON</span>
                       </div>
-
-                      <div>
-                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                          <h4 className="font-syne font-bold text-xl uppercase text-black">Harajuku Kitchen</h4>
-                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">SEP 2023 - JUL 2026 • EDINBURGH</span>
-                        </div>
-                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobHarajukuRole}</p>
-                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                          <li>{t.cvJobHarajukuB1}</li>
-                          <li>{t.cvJobHarajukuB2}</li>
-                          <li>{t.cvJobHarajukuB3}</li>
-                        </ul>
-                      </div>
-
-                      <div>
-                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                          <h4 className="font-syne font-bold text-xl uppercase text-black">The Griffin</h4>
-                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">JUN-AUG 2024 • LONDON</span>
-                        </div>
-                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobGriffinRole}</p>
-                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                          <li>{t.cvJobGriffinB1}</li>
-                          <li>{t.cvJobGriffinB2}</li>
-                          <li>{t.cvJobGriffinB3}</li>
-                        </ul>
-                      </div>
-                      
-                      <div>
-                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                          <h4 className="font-syne font-bold text-xl uppercase text-black">Assembly Festival</h4>
-                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">JUL-AUG 2023 • EDINBURGH</span>
-                        </div>
-                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobAssemblyRole}</p>
-                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                          <li>{t.cvJobAssemblyB1}</li>
-                          <li>{t.cvJobAssemblyB2}</li>
-                          <li>{t.cvJobAssemblyB3}</li>
-                        </ul>
-                      </div>
-                      
-                      <div>
-                        <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                          <h4 className="font-syne font-bold text-xl uppercase text-black">Melody Box</h4>
-                          <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">MAY-JUN 2023 • NAGASAKI, JP</span>
-                        </div>
-                        <p className="font-serif text-lg italic mb-3 text-black">{t.cvJobMelodyRole}</p>
-                        <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                          <li>{t.cvJobMelodyB1}</li>
-                          <li>{t.cvJobMelodyB2}</li>
-                          <li>{t.cvJobMelodyB3}</li>
-                        </ul>
-                      </div>
-
-                      <div className="space-y-6">
-                        <div>
-                          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                            <h4 className="font-syne font-bold text-xl uppercase text-black">Fun Scientists</h4>
-                            <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">NOV 2022 - APR 2023</span>
-                          </div>
-                          <p className="font-serif text-lg italic mb-1 text-black">{t.cvJobFunRole}</p>
-                        </div>
-                        <div>
-                          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-baseline mb-2 border-b-[2px] border-black pb-2">
-                            <h4 className="font-syne font-bold text-xl uppercase text-black">Totteridge Tennis Club</h4>
-                            <span className="font-mono text-xs font-bold tracking-widest text-black/70 mt-1 xl:mt-0">AUG 2021 - APR 2022</span>
-                          </div>
-                          <p className="font-serif text-lg italic mb-1 text-black">{t.cvJobTennisRole}</p>
-                        </div>
-                      </div>
-
+                      <p className="font-serif text-base italic text-black/80 mb-3">
+                        {t.cvHospGroupRoles}
+                      </p>
+                      <p className="font-serif text-base md:text-lg text-black leading-relaxed">
+                        {t.cvHospGroupDesc}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Skills & Leadership */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 divide-y-[4px] md:divide-y-0 md:divide-x-[4px] divide-black bg-white text-black">
-                    <div className="p-4 md:p-6 lg:p-10 bg-white text-black">
-                      <h3 className="font-goodgirl text-3xl uppercase mb-6 flex items-center gap-3 text-black">
-                        <span className="border-[2px] border-black text-black px-2 py-1 font-mono text-sm">03</span> {t.cvLeadership}
-                      </h3>
-                      
-                      <div className="space-y-8">
-                        <div>
-                          <h4 className="font-syne font-bold text-xl uppercase mb-1 text-black">{t.cvGoetheTitle}</h4>
-                          <div className="flex justify-between items-baseline mb-3">
-                            <p className="font-serif text-lg italic text-black">{t.cvGoetheRole}</p>
-                            <span className="font-mono text-xs font-bold tracking-widest border border-black px-1 ml-2 text-black">OCT 2021</span>
-                          </div>
-                          <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                            <li>{t.cvGoetheB1}</li>
-                            <li>{t.cvGoetheB2}</li>
-                            <li>{t.cvGoetheB3}</li>
-                          </ul>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-syne font-bold text-xl uppercase mb-1 text-black">{t.cvJazzTitle}</h4>
-                          <div className="flex justify-between items-baseline mb-3">
-                            <p className="font-serif text-lg italic text-black">{t.cvJazzRole}</p>
-                            <span className="font-mono text-xs font-bold tracking-widest border border-black px-1 ml-2 text-black">2023-2026</span>
-                          </div>
-                          <ul className="list-disc list-outside font-serif text-base ml-5 space-y-1 marker:text-black text-black">
-                            <li>{t.cvJazzB1}</li>
-                            <li>{t.cvJazzB2}</li>
-                            <li>{t.cvJazzB3}</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-4 md:p-6 lg:p-10 bg-white text-black">
-                      <h3 className="font-goodgirl text-3xl uppercase mb-6 flex items-center gap-3 text-black">
-                        <span className="border-[2px] border-black text-black px-2 py-1 font-mono text-sm">04</span> {t.cvSkills}
-                      </h3>
-                      
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="font-mono text-sm font-bold tracking-widest border-b-[2px] border-black mb-3 pb-1 uppercase text-black">{t.cvSkillsLanguages}</h4>
-                          <div className="font-serif text-lg text-black space-y-1">
-                            <div>{t.cvSkillsLanguagesJa}</div>
-                            <div>{t.cvSkillsLanguagesDe}</div>
-                            <div>{t.cvSkillsLanguagesRu}</div>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-mono text-sm font-bold tracking-widest border-b-[2px] border-black mb-3 pb-1 uppercase text-black">{t.cvSkillsTechnical}</h4>
-                          <p className="font-serif text-lg text-black">
-                            {t.cvSkillsTechnicalDesc}
-                          </p>
-                        </div>
-                        <div>
-                          <h4 className="font-mono text-sm font-bold tracking-widest border-b-[2px] border-black mb-3 pb-1 uppercase text-black">{t.cvSkillsInterests}</h4>
-                          <p className="font-serif text-lg text-black mb-2">
-                            {t.cvSkillsInterestsCoach}
-                          </p>
-                          <p className="font-serif text-lg text-black">
-                            {t.cvSkillsInterestsHobbies}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
@@ -726,20 +908,20 @@ export default function App() {
                     {/* Animated Snails */}
                     <div className="absolute inset-0 pointer-events-none z-0">
                       <motion.img 
-                        src={assetUrl('snail cursor.png')}
+                        src="/snail%20cursor.png" 
                         className="absolute top-10 md:top-20 w-32 md:w-48 opacity-20 invert"
                         animate={{ x: ['-200px', '100vw'] }}
                         transition={{ repeat: Infinity, duration: 18, ease: "linear" }}
                       />
                       <motion.img 
-                        src={assetUrl('snail cursor.png')}
+                        src="/snail%20cursor.png" 
                         className="absolute bottom-12 md:bottom-24 w-24 md:w-32 opacity-20 invert"
                         animate={{ x: ['100vw', '-200px'] }}
                         transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
                         style={{ scaleX: -1 }} 
                       />
                       <motion.img 
-                        src={assetUrl('snail cursor.png')}
+                        src="/snail%20cursor.png" 
                         className="absolute top-1/2 w-40 md:w-56 opacity-10 invert"
                         animate={{ x: ['-300px', '100vw'] }}
                         transition={{ repeat: Infinity, duration: 35, ease: "linear" }}

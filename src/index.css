@@ -28,8 +28,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  cursor: none !important;
+/* Ensure interactive elements show the standard pointer for clear usability */
+a, button, [role="button"], input, select, textarea, .cursor-pointer {
+  cursor: pointer !important;
 }
 
 .writing-vertical-rl {
