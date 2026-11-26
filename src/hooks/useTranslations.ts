@@ -37,6 +37,13 @@ const PRE_SWAP_FORGO = new Set([
   "На первом курсе Эдинбургского университета я состояла в кинематографическом обществе. В качестве ассистента по костюмам я подбирала наряды для сцен вместе с художниками по костюмам, а также помогала на площадке со светом и звуком."
 ]);
 
+const PRE_TECH_SKILLS = new Set([
+  "Design: Procreate, Figma, Adobe Photoshop, InDesign • Web: HTML/CSS, React, Firebase, Tailwind CSS, AI-assisted development tools • Media: Premiere Pro, LumaFusion, Shotcut, Film Production & Multilingual Subtitling • Communications: Copywriting, Cultural Localization, Social Media Management.",
+  "デザイン：Procreate, Figma, Adobe Photoshop, InDesign • ウェブ：HTML/CSS, React, Firebase, Tailwind CSS, AI開発ツール • メディア：Premiere Pro, LumaFusion, Shotcut, 映像制作・多言語字幕 • コミュニケーション：コピーライティング、文化ローカリゼーション、SNS広報運用。",
+  "Design: Procreate, Figma, Adobe Photoshop, InDesign • Web: HTML/CSS, React, Firebase, Tailwind CSS, KI-gestützte Entwicklungswerkzeuge • Medien: Premiere Pro, LumaFusion, Shotcut, Filmproduktion & mehrsprachige Untertitel • Kommunikation: Copywriting, Lokalisierung, Social-Media-Management.",
+  "Дизайн: Procreate, Figma, Adobe Photoshop, InDesign • Веб: HTML/CSS, React, Firebase, Tailwind CSS, AI-инструменты • Медиа: Premiere Pro, LumaFusion, Shotcut, съёмка и субтитры • Коммуникации: копирайтинг, культурная адаптация, ведение соцсетей."
+]);
+
 const DEFAULT_TRANSLATIONS = {
   "en": {
     "headerSubtitle": "multilingual creative",
@@ -154,7 +161,7 @@ const DEFAULT_TRANSLATIONS = {
     "cvSkillsLanguagesDe": "German: C1",
     "cvSkillsLanguagesRu": "Russian: B1/Basic",
     "cvSkillsTechnical": "Technical",
-    "cvSkillsTechnicalDesc": "Design: Procreate, Figma, Adobe Photoshop, InDesign • Web: HTML/CSS, React, Firebase, Tailwind CSS, AI-assisted development tools • Media: Premiere Pro, LumaFusion, Shotcut, Film Production & Multilingual Subtitling • Communications: Copywriting, Cultural Localization, Social Media Management.",
+    "cvSkillsTechnicalDesc": "Design: Procreate, Figma, Adobe Photoshop, InDesign • Web: HTML/CSS, Google AI Studio, AI-assisted development tools • Media: Premiere Pro, LumaFusion, Shotcut, Film Production & Multilingual Subtitling • Communications: Copywriting, Cultural Localization, Social Media Management.",
     "cvSkillsInterests": "Certifications & Interests",
     "cvSkillsInterestsCoach": "Level 1 LTA Tennis Coach.",
     "cvSkillsInterestsHobbies": "Cooking (Especially Japanese food), Piano (Grade 8 Distinction), Jazz, Films and Filmmaking."
@@ -275,7 +282,7 @@ const DEFAULT_TRANSLATIONS = {
     "cvSkillsLanguagesDe": "ドイツ語: C1（上級）",
     "cvSkillsLanguagesRu": "ロシア語: B1（初中級）",
     "cvSkillsTechnical": "技術・ツール",
-    "cvSkillsTechnicalDesc": "デザイン：Procreate, Figma, Adobe Photoshop, InDesign • ウェブ：HTML/CSS, React, Firebase, Tailwind CSS, AI開発ツール • メディア：Premiere Pro, LumaFusion, Shotcut, 映像制作・多言語字幕 • コミュニケーション：コピーライティング、文化ローカリゼーション、SNS広報運用。",
+    "cvSkillsTechnicalDesc": "デザイン：Procreate, Figma, Adobe Photoshop, InDesign • ウェブ：HTML/CSS, Google AI Studio, AI開発ツール • メディア：Premiere Pro, LumaFusion, Shotcut, 映像制作・多言語字幕 • コミュニケーション：コピーライティング、文化ローカリゼーション、SNS広報運用。",
     "cvSkillsInterests": "資格・趣味",
     "cvSkillsInterestsCoach": "LTA公認 テニスコーチ（Level 1）。",
     "cvSkillsInterestsHobbies": "料理（特に和食）、ピアノ（英国Grade 8 優秀賞）、ジャズ、映画鑑賞・映像制作。"
@@ -396,7 +403,7 @@ const DEFAULT_TRANSLATIONS = {
     "cvSkillsLanguagesDe": "Deutsch: C1 (Fortgeschritten)",
     "cvSkillsLanguagesRu": "Russisch: B1 (Grundstufe)",
     "cvSkillsTechnical": "Technik & Software",
-    "cvSkillsTechnicalDesc": "Design: Procreate, Figma, Adobe Photoshop, InDesign • Web: HTML/CSS, React, Firebase, Tailwind CSS, KI-gestützte Entwicklungswerkzeuge • Medien: Premiere Pro, LumaFusion, Shotcut, Filmproduktion & mehrsprachige Untertitel • Kommunikation: Copywriting, Lokalisierung, Social-Media-Management.",
+    "cvSkillsTechnicalDesc": "Design: Procreate, Figma, Adobe Photoshop, InDesign • Web: HTML/CSS, Google AI Studio, KI-gestützte Entwicklungswerkzeuge • Medien: Premiere Pro, LumaFusion, Shotcut, Filmproduktion & mehrsprachige Untertitel • Kommunikation: Copywriting, Lokalisierung, Social-Media-Management.",
     "cvSkillsInterests": "Zertifikate & Interessen",
     "cvSkillsInterestsCoach": "Level 1 LTA Tennistrainerin.",
     "cvSkillsInterestsHobbies": "Kochen (besonders japanische Küche), Klavier (Grade 8 mit Auszeichnung), Jazz, Film und Filmgestaltung."
@@ -517,7 +524,7 @@ const DEFAULT_TRANSLATIONS = {
     "cvSkillsLanguagesDe": "Немецкий: C1 (продвинутый уровень)",
     "cvSkillsLanguagesRu": "Русский: B1 (базовый уровень)",
     "cvSkillsTechnical": "Технические навыки",
-    "cvSkillsTechnicalDesc": "Дизайн: Procreate, Figma, Adobe Photoshop, InDesign • Веб: HTML/CSS, React, Firebase, Tailwind CSS, AI-инструменты • Медиа: Premiere Pro, LumaFusion, Shotcut, съёмка и субтитры • Коммуникации: копирайтинг, культурная адаптация, ведение соцсетей.",
+    "cvSkillsTechnicalDesc": "Дизайн: Procreate, Figma, Adobe Photoshop, InDesign • Веб: HTML/CSS, Google AI Studio, AI-инструменты • Медиа: Premiere Pro, LumaFusion, Shotcut, съёмка и субтитры • Коммуникации: копирайтинг, культурная адаптация, ведение соцсетей.",
     "cvSkillsInterests": "Сертификаты и интересы",
     "cvSkillsInterestsCoach": "Тренер по теннису LTA (Level 1).",
     "cvSkillsInterestsHobbies": "Кулинария (особенно японская кухня), фортепиано (Grade 8 с отличием), джаз, кино и видеосъёмка."
@@ -562,7 +569,8 @@ export function useTranslations() {
                 
                 const isPreSwapTakeMe = key === 'filmTakeMeDesc' && PRE_SWAP_TAKE_ME.has(stored[key]);
                 const isPreSwapForgo = key === 'filmForgoDesc' && PRE_SWAP_FORGO.has(stored[key]);
-                const isOutdatedDefault = OUTDATED_BIO_VALUES.has(stored[key]) || isPreSwapTakeMe || isPreSwapForgo;
+                const isPreTechSkills = key === 'cvSkillsTechnicalDesc' && (PRE_TECH_SKILLS.has(stored[key]) || stored[key].includes('React') || stored[key].includes('Tailwind') || stored[key].includes('Firebase'));
+                const isOutdatedDefault = OUTDATED_BIO_VALUES.has(stored[key]) || isPreSwapTakeMe || isPreSwapForgo || isPreTechSkills;
                 
                 if (!isEnglishPlaceholder && !isOutdatedDefault) {
                   langMerged[key] = stored[key];

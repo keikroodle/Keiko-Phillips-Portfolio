@@ -61,6 +61,7 @@ interface ResponsiveImageProps {
   webpSrc?: string;
   alt: string;
   className?: string;
+  pictureClassName?: string;
   loading?: 'lazy' | 'eager';
   fetchPriority?: 'high' | 'low' | 'auto';
   decoding?: 'async' | 'sync' | 'auto';
@@ -72,6 +73,7 @@ const ResponsiveImage = ({
   webpSrc,
   alt,
   className = '',
+  pictureClassName = 'contents',
   loading = 'lazy',
   fetchPriority = 'auto',
   decoding = 'async',
@@ -92,7 +94,7 @@ const ResponsiveImage = ({
 
   if (resolvedWebp) {
     return (
-      <picture className="contents">
+      <picture className={pictureClassName}>
         <source srcSet={resolvedWebp} type="image/webp" />
         <img {...imgProps} />
       </picture>
@@ -137,12 +139,16 @@ const RealBookImage = ({
   src, 
   webpSrc, 
   alt, 
-  fallbackSrc 
+  fallbackSrc,
+  className = "w-full h-full object-cover block bg-white",
+  pictureClassName = "block w-full h-full"
 }: { 
   src: string; 
   webpSrc?: string; 
   alt: string; 
-  fallbackSrc?: string; 
+  fallbackSrc?: string;
+  className?: string;
+  pictureClassName?: string;
 }) => {
   const [currentSrc, setCurrentSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
@@ -154,8 +160,8 @@ const RealBookImage = ({
       alt={alt} 
       loading="lazy"
       decoding="async"
-      className="w-full h-auto border-[3px] border-zine-ink bg-white" 
-      // If error occurs, fallback cleanly
+      pictureClassName={pictureClassName}
+      className={className} 
     />
   ) : (
     <div className="w-full aspect-[3/4] bg-white border-[3px] border-zine-ink p-6 flex flex-col justify-between text-zine-ink font-serif relative">
@@ -395,16 +401,15 @@ export default function App() {
 
             {activePage === 'graphics' && (
               <div className="flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="border-b-[4px] border-zine-ink p-4 md:p-6 lg:p-10 bg-zine-ink text-zine-bg relative overflow-hidden">
+                <div className="p-4 md:p-6 lg:p-8 bg-zine-ink text-zine-bg relative overflow-hidden">
                   <h2 className="font-goodgirl text-6xl md:text-8xl z-10 relative text-white">{t.navGraphics}</h2>
-                  
                 </div>
                 
-                <div className="p-4 md:p-6 lg:p-10 border-b-[4px] border-zine-ink">
-                  <div className="flex flex-col gap-6">
+                <div className="px-4 md:px-6 lg:px-8 pt-2 pb-6 md:pb-8 flex flex-col gap-6">
+                  <div className="flex flex-col gap-4">
                     <div className="w-full font-serif text-xl md:text-2xl leading-snug max-w-4xl">
-                      <div className="mb-4">
-                        <h3 className="font-goodgirl text-4xl mb-4 uppercase text-zine-vermilion">{t.graphicsEdiJazzTitle}</h3>
+                      <div className="mb-3">
+                        <h3 className="font-goodgirl text-4xl mb-3 uppercase text-zine-vermilion">{t.graphicsEdiJazzTitle}</h3>
                         <p>{t.graphicsEdiJazzDesc}</p>
                       </div>
                       <p>
@@ -412,45 +417,78 @@ export default function App() {
                       </p>
                     </div>
                     
-                    <div className="flex flex-col gap-12 mt-8 items-center w-full">
-                      {/* Real Book Committee Introduction Campaign */}
-                      <div className="w-full max-w-4xl">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <div className="flex flex-col gap-3 md:gap-4 w-full">
+                      {/* Real Book Committee Introduction Campaign — exact matched row height */}
+                      <div className="grid grid-cols-1 sm:grid-cols-[0.8201fr_0.8260fr] gap-3 md:gap-4 w-full items-start">
+                        <div className="w-full overflow-hidden" style={{ aspectRatio: '652 / 795' }}>
                           <RealBookImage 
                             src="/realbook 1 of 2 .png" 
                             webpSrc="/realbook_1.webp"
                             fallbackSrc="/realbook 1 of 2.png" 
                             alt="The 2023-24 JazzSoc Committee (Part One)" 
+                            pictureClassName="block w-full"
+                            className="w-full h-auto block bg-white"
                           />
+                        </div>
+                        <div className="w-full overflow-hidden" style={{ aspectRatio: '679 / 822' }}>
                           <RealBookImage 
                             src="/realbook 2 of 2.png" 
                             webpSrc="/realbook_2.webp"
                             fallbackSrc="/realbook 2 of 2 .png" 
                             alt="Publicity Officer Keiko Phillips Feature" 
+                            pictureClassName="block w-full"
+                            className="w-full h-auto block bg-white"
                           />
                         </div>
                       </div>
 
-                      <ResponsiveImage src="/insta post 1.png" webpSrc="/insta_post_1.webp" alt="EdiJazzSoc Instagram Post 1" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
-                      <ResponsiveImage src="/insta post 2.png" webpSrc="/insta_post_2.webp" alt="EdiJazzSoc Instagram Post 2" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
-                      <ResponsiveImage src="/insta post 3.png" webpSrc="/insta_post_3.webp" alt="EdiJazzSoc Instagram Post 3" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
+                      {/* Instagram Posts — full width so details and captions are clearly visible */}
+                      <div className="flex flex-col gap-3 md:gap-4 w-full">
+                        <div className="w-full overflow-hidden" style={{ aspectRatio: '1000 / 596' }}>
+                          <ResponsiveImage src="/insta post 1.png" webpSrc="/insta_post_1.webp" alt="EdiJazzSoc Instagram Post 1" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                        </div>
+                        <div className="w-full overflow-hidden" style={{ aspectRatio: '1000 / 611' }}>
+                          <ResponsiveImage src="/insta post 2.png" webpSrc="/insta_post_2.webp" alt="EdiJazzSoc Instagram Post 2" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                        </div>
+                        <div className="w-full overflow-hidden" style={{ aspectRatio: '1000 / 608' }}>
+                          <ResponsiveImage src="/insta post 3.png" webpSrc="/insta_post_3.webp" alt="EdiJazzSoc Instagram Post 3" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 md:p-6 lg:p-10 bg-zine-ink">
-                  <h3 className="font-goodgirl text-4xl mb-6 uppercase">{t.graphicsEventPostersTitle}</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <ResponsiveImage src="/new steps.png" webpSrc="/new_steps.webp" alt="New Steps Session Poster" loading="lazy" decoding="async" className="w-full h-auto" />
-                    <ResponsiveImage src="/mnj.png" webpSrc="/mnj.webp" alt="Monday Night Jazz Poster" loading="lazy" decoding="async" className="w-full h-auto" />
-                    <ResponsiveImage src="/jazz bar.png" webpSrc="/jazz_bar.webp" alt="Jazz Bar Jam Poster" loading="lazy" decoding="async" className="w-full h-auto" />
-                    <ResponsiveImage src="/brass monkey.png" webpSrc="/brass_monkey.webp" alt="Brass Monkey Social Poster" loading="lazy" decoding="async" className="w-full h-auto" />
+                <div className="px-4 md:px-6 lg:px-8 pt-2 pb-6 md:pb-8 bg-zine-ink">
+                  <h3 className="font-goodgirl text-4xl mb-4 uppercase">{t.graphicsEventPostersTitle}</h3>
+                  <div className="flex flex-col gap-3 md:gap-4 w-full">
+                    {/* Row 1 — exact matched row height */}
+                    <div className="grid grid-cols-1 sm:grid-cols-[0.8fr_0.7071fr] gap-3 md:gap-4 w-full items-start">
+                      <div className="w-full overflow-hidden" style={{ aspectRatio: '900 / 1125' }}>
+                        <ResponsiveImage src="/new steps.png" webpSrc="/new_steps.webp" alt="New Steps Session Poster" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                      </div>
+                      <div className="w-full overflow-hidden" style={{ aspectRatio: '1200 / 1697' }}>
+                        <ResponsiveImage src="/mnj.png" webpSrc="/mnj.webp" alt="Monday Night Jazz Poster" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                      </div>
+                    </div>
+                    {/* Row 2 — exact matched row height */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 w-full items-start">
+                      <div className="w-full overflow-hidden" style={{ aspectRatio: '900 / 1125' }}>
+                        <ResponsiveImage src="/jazz bar.png" webpSrc="/jazz_bar.webp" alt="Jazz Bar Jam Poster" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                      </div>
+                      <div className="w-full overflow-hidden" style={{ aspectRatio: '900 / 1125' }}>
+                        <ResponsiveImage src="/brass monkey.png" webpSrc="/brass_monkey.webp" alt="Brass Monkey Social Poster" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="mt-10 border-t-[3px] border-zine-ink pt-6">
-                    <h3 className="font-goodgirl text-4xl mb-4 uppercase">{t.graphicsBilingualTitle}</h3>
-                    <p className="font-serif text-xl mb-6">{t.graphicsBilingualDesc}</p>
-                    <ResponsiveImage src="/phillips times.jpg" webpSrc="/phillips_times.webp" alt="The Phillips Times" loading="lazy" decoding="async" className="w-full max-w-2xl h-auto" />
+                  <div className="mt-8 pt-2 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center">
+                    <div className="md:col-span-6">
+                      <h3 className="font-goodgirl text-4xl mb-3 uppercase">{t.graphicsBilingualTitle}</h3>
+                      <p className="font-serif text-xl">{t.graphicsBilingualDesc}</p>
+                    </div>
+                    <div className="md:col-span-6 w-full overflow-hidden" style={{ aspectRatio: '1000 / 1278' }}>
+                      <ResponsiveImage src="/phillips times.jpg" webpSrc="/phillips_times.webp" alt="The Phillips Times" loading="lazy" decoding="async" pictureClassName="block w-full" className="w-full h-auto block" />
+                    </div>
                   </div>
                 </div>
               </div>

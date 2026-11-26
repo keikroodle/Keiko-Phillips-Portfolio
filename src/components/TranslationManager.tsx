@@ -257,6 +257,21 @@ export default function TranslationManager() {
               SIGN IN WITH GOOGLE
             </button>
           </div>
+        ) : user.email?.toLowerCase() !== 'keikojphillips@gmail.com' ? (
+          <div className="flex flex-col items-center justify-center flex-grow p-8 text-center">
+            <div className="border border-red-500/40 bg-red-950/20 p-6 max-w-md">
+              <h3 className="text-red-400 font-bold text-base uppercase mb-2">Access Denied</h3>
+              <p className="text-zinc-300 text-xs mb-4">
+                Signed in as <span className="font-bold text-white">{user.email}</span>. Only the site administrator (<span className="text-zinc-200">keikojphillips@gmail.com</span>) has editing permissions.
+              </p>
+              <button 
+                onClick={logout} 
+                className="px-4 py-2 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white uppercase text-xs font-bold transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col flex-grow overflow-hidden">
             

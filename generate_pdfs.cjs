@@ -90,7 +90,7 @@ function generateEnglishCV() {
   doc.text('Design & Web:', margin, y);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...charcoal);
-  doc.text('Procreate, Figma, Adobe Photoshop, InDesign, HTML/CSS, React, Firebase, AI-assisted development tools', margin + 65, y);
+  doc.text('Procreate, Figma, Adobe Photoshop, InDesign, HTML/CSS, Google AI Studio, AI-assisted development tools', margin + 65, y);
 
   y += 13;
   doc.setFont('helvetica', 'bold');
@@ -341,7 +341,7 @@ function generateGermanLebenslauf() {
 
   addRow('Software & Tools', 'Design, Web & Multimedia', [
     'Design: Procreate, Figma, Adobe Photoshop, InDesign, Typografie, Plakat- & Buchgestaltung',
-    'Web: HTML/CSS, React, Firebase, Tailwind CSS, KI-gestützte Entwicklungswerkzeuge',
+    'Web: HTML/CSS, Google AI Studio, KI-gestützte Entwicklungswerkzeuge',
     'Video & Audio: Filmregie, Premiere Pro, LumaFusion, Shotcut, mehrsprachige Untertitelung'
   ]);
 
